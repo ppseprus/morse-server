@@ -9,6 +9,10 @@ var express = require('express'),
     server = http.createServer(app).listen(config.port),
     io = socket.listen(server);
 
+app.get('/', function (req, res) {
+    res.send('Hello World!');
+});
+
 io.sockets.on('connection', (client) => {
     console.log(`client connected`);
 
