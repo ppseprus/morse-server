@@ -2,37 +2,40 @@ var config = {
     port: 3000
 }
 
-var express = require('express'),
-    socket = require('socket.io'),
-    app = express(),
-    http = require('http'),
-    server = http.createServer(app).listen(config.port),
-    io = socket.listen(server);
+var app = require('express')(),
+    http = require('http').Server(app),
+    io = require('socket.io')(http);
 
 app.get('/', function (req, res) {
-    res.send('Hello World!');
+    res.send('socket.io server');
 });
 
-io.sockets.on('connection', (client) => {
-    console.log(`client connected`);
+http.listen(config.port, function(){
+    console.log('listening on *:'+config.port);
+});
 
-    client.on('join', handleUserJoin);
-
-    client.on('messages', handleUserMessage);
-
-    function handleUserJoin(name) {
-        client.set('username', name);
-    }
-
+io.on('connection', (client) => {
+    console.log('client connected');
+    
+    
+    //client.on('join', handleUserJoin);
+    
+    //function handleUserJoin(name) {
+    //    client.set('username', name);
+    //}
+    
+    //client.on('messages', handleUserMessage);
+    
+    
     /**
-     * data: {
-     *      message: 'your message',
-     *      timestamp: new Date()
-     * }
-     */
-    function handleUserMessage(data) {
+    * data: {
+    *      message: 'your message',
+    *      timestamp: new Date()
+    * }
+    */
+    /*function handleUserMessage(data) {
         client.get('username', function(err, name) {
-            client.broadcast.emit('chat', `${name}: ${data.message}`);
+            client.broadcast.emit('messages', `${name}: ${data.message}`);
         });
-    }
+    }*/
 });
