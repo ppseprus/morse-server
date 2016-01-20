@@ -9,3 +9,13 @@ npm start
 ```
 
 The server will listen on port: **3000**
+
+
+## API
+
+### Event types
+
+- user:connect
+- user:disconnect
+- user:join
+- message
