@@ -15,6 +15,7 @@ The server will listen on port: **3000**
 
 ### Event types
 
+The following events are also emitted for every client
 - user:connect
 - user:disconnect
 - user:join
