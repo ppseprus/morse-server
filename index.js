@@ -93,7 +93,7 @@
             data.username = u;
             data.for = 'everyone';
             
-            //client.broadcast.emit(event, data);
+            client.broadcast.emit(event, data);
             client.emit(event, data);
             
             console.log(`${data.timestamp} ${u}: ${data.message}`);
