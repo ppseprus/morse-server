@@ -16,6 +16,7 @@ The server will listen on port: **3000**
 ### Event types
 
 **user:connect**
+
 When the user connects, a guest number is assigned.
 ```
 data = {
@@ -39,6 +40,7 @@ data = {
 ```
 
 **user:join**
+
 This event is where the user actually claims a username and IF it is claimed (=the username was not previously taken), the following two events are emitted.
 The first event shows which guest user took the actual username, while the second event is just a log.
 ```
@@ -60,6 +62,7 @@ data = {
 ```
 
 **message**
+
 This event type is a relay. Any message sent with this event type is sent to every client.
 ```
 data = {
