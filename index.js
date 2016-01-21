@@ -1,8 +1,11 @@
+var userNames = require('./username'),
+    paddingIfLessThan10 = require('./commons').zeroPaddingGenerator(10);
+
 (function(){
     
     var config = {
         port: 3000
-    }
+    };
     
     var app = require('express')(),
         http = require('http').Server(app),
@@ -15,65 +18,11 @@
     
     
     function UTCTimeString(date) {
-        function pad(number) {
-            if (number < 10) {
-                return '0' + number;
-            }
-            return number;
-        }
-        return pad(date.getUTCHours()) +
-        ':' + pad(date.getUTCMinutes()) +
-        ':' + pad(date.getUTCSeconds()) +
+        return paddingIfLessThan10(date.getUTCHours()) +
+        ':' + paddingIfLessThan10(date.getUTCMinutes()) +
+        ':' + paddingIfLessThan10(date.getUTCSeconds()) +
         '.' + (date.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5);
     }
-    
-    var userNames = (function () {
-        var claim = function (name) {
-            if (!name || userNames[name]) {
-                return false;
-            } else {
-                userNames[name] = true;
-                return true;
-            }
-        };
-        
-        // find the lowest unused "guest" name and claim it
-        var getGuestName = function () {
-            var name,
-            nextUserId = 1;
-            
-            do {
-                name = 'guest' + nextUserId;
-                nextUserId += 1;
-            } while (!claim(name));
-            
-            return name;
-        };
-        
-        // serialize claimed names as an array
-        var get = function () {
-            var res = [];
-            for (user in userNames) {
-                res.push(user);
-            }
-            
-            return res;
-        };
-        
-        var free = function (name) {
-            if (userNames[name]) {
-                delete userNames[name];
-            }
-        };
-        
-        return {
-            claim: claim,
-            free: free,
-            get: get,
-            getGuestName: getGuestName
-        };
-    }());
-    
     
     http.listen(config.port, function(){
         console.log('listening on *:'+config.port);
@@ -86,7 +35,7 @@
         
         
         //  broadcast = emit for everyone
-        function bc(event, data, u) {
+        function broadcast(event, data, u) {
             if (typeof u === 'undefined') { u = username; }
             
             data.event = event;
@@ -98,7 +47,7 @@
         
         
         //  client connects
-        bc('user:connect', {
+        broadcast('user:connect', {
             'timestamp': UTCTimeString(new Date()),
             'message': username+' has connected'
         }, 'server');
@@ -106,7 +55,7 @@
         //  client disconnects
         client.on('disconnect', function(){
             userNames.free(username);
-            bc('user:disconnect', {
+            broadcast('user:disconnect', {
                 'timestamp': UTCTimeString(new Date()),
                 'message': username+' has disconnected'
             }, 'server');
@@ -117,7 +66,7 @@
             if (userNames.claim(data.username)) {
                 //  we free up the guest name
                 userNames.free(username);
-                bc('user:join', {
+                broadcast('user:join', {
                     'timestamp': UTCTimeString(new Date()),
                     'message': username+' > '+data.username
                 }, 'server');
@@ -125,7 +74,7 @@
                 username = data.username;
                 
                 
-                bc('user:join', {
+                broadcast('user:join', {
                     'timestamp': UTCTimeString(new Date()),
                     'message': username+' has joined'
                 }, 'server');
@@ -143,7 +92,7 @@
         
         //  message relay
         client.on('message', function(data){
-            bc('message', data);
+            broadcast('message', data);
         });
         
     });
