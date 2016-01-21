@@ -132,6 +132,13 @@
             } else {
                 //  let user know, his username was not accepted
             }
+            
+            client.emit('youare', {
+                'event': 'youare',
+                'timestamp': UTCTimeString(new Date()),
+                'username': 'server',
+                'message': username
+            });
         });
         
         //  message relay
